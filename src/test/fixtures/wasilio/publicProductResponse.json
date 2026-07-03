@@ -1,0 +1,46 @@
+{
+  "storeSlug": "coolair-morocco",
+  "storePublicName": "CoolAir Morocco",
+  "supportChannel": {
+    "type": "whatsapp",
+    "value": "+212600000000"
+  },
+  "product": {
+    "productId": "prod_portable_air_cooler_001",
+    "productSlug": "portable-air-cooler",
+    "productName": "Portable Air Cooler",
+    "description": "A compact evaporative air cooler for small rooms, desks, and bedside cooling.",
+    "imageUrl": "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg",
+    "availability": "AVAILABLE",
+    "orderable": true
+  },
+  "offer": {
+    "price": 349,
+    "currency": "MAD"
+  },
+  "seo": {
+    "title": "Portable Air Cooler - CoolAir Morocco",
+    "description": "Order a compact portable air cooler in Morocco with cash on delivery.",
+    "imageUrl": "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg",
+    "canonicalUrl": "https://coolair-morocco.wasilio.test/products/portable-air-cooler"
+  },
+  "gallery": [
+    "https://cdn.wasilio.test/products/portable-air-cooler/side.jpg",
+    {
+      "url": "https://cdn.wasilio.test/products/portable-air-cooler/detail.jpg"
+    }
+  ],
+  "variants": [],
+  "faq": [],
+  "testimonials": [],
+  "trustBadges": [],
+  "experiments": null,
+  "analytics": {},
+  "market": {
+    "countryCode": "MA",
+    "currency": "MAD",
+    "deliveryCities": ["Casablanca", "Rabat"],
+    "phonePattern": "^(06|07)\\d{8}$"
+  },
+  "marketingSections": {}
+}

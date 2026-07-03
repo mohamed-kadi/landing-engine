@@ -1,0 +1,11 @@
+export { BenefitsSection } from './BenefitsSection';
+export { ComparisonSection } from './ComparisonSection';
+export { FAQSection } from './FAQSection';
+export { FeaturesSection } from './FeaturesSection';
+export { HeroSection } from './HeroSection';
+export { OrderFormSection } from './OrderFormSection';
+export { ProblemSolutionSection } from './ProblemSolutionSection';
+export { ProductGallerySection } from './ProductGallerySection';
+export { SocialProofSection } from './SocialProofSection';
+export { StickyCTASection } from './StickyCTASection';
+export { TrustSection } from './TrustSection';

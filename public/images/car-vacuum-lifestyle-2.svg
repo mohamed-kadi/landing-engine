@@ -1,0 +1,17 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#F8FAFC"/>
+  <rect x="126" y="178" width="948" height="790" rx="52" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="4"/>
+  <path d="M240 744H960L905 468C892 402 834 354 767 354H433C366 354 308 402 295 468L240 744Z" fill="#27272A"/>
+  <path d="M302 744H898" stroke="#18181B" stroke-width="42" stroke-linecap="round"/>
+  <path d="M365 480H835" stroke="#52525B" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="382" cy="790" r="76" fill="#18181B"/>
+  <circle cx="382" cy="790" r="34" fill="#71717A"/>
+  <circle cx="818" cy="790" r="76" fill="#18181B"/>
+  <circle cx="818" cy="790" r="34" fill="#71717A"/>
+  <rect x="474" y="612" width="252" height="96" rx="48" fill="#18181B"/>
+  <rect x="510" y="644" width="180" height="32" rx="16" fill="#10B981"/>
+  <path d="M600 612V546" stroke="#18181B" stroke-width="28" stroke-linecap="round"/>
+  <path d="M524 546H676" stroke="#18181B" stroke-width="28" stroke-linecap="round"/>
+  <path d="M362 934H838" stroke="#A1A1AA" stroke-width="18" stroke-linecap="round"/>
+  <text x="600" y="268" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#18181B">Stores Easily Between Trips</text>
+</svg>

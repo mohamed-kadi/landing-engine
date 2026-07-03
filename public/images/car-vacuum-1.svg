@@ -1,0 +1,15 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#F4F4F5"/>
+  <rect x="128" y="168" width="944" height="864" rx="44" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="4"/>
+  <path d="M300 526H704C779 526 840 587 840 662C840 737 779 798 704 798H300V526Z" fill="#18181B"/>
+  <path d="M236 574H300V750H236C187 750 148 711 148 662C148 613 187 574 236 574Z" fill="#27272A"/>
+  <path d="M840 650H984C1013 650 1036 673 1036 702V726H840V650Z" fill="#3F3F46"/>
+  <circle cx="705" cy="662" r="58" fill="#10B981"/>
+  <circle cx="705" cy="662" r="30" fill="#D1FAE5"/>
+  <rect x="430" y="402" width="152" height="58" rx="29" fill="#27272A"/>
+  <rect x="630" y="380" width="218" height="58" rx="29" fill="#3F3F46"/>
+  <rect x="220" y="878" width="210" height="48" rx="24" fill="#D4D4D8"/>
+  <rect x="490" y="878" width="210" height="48" rx="24" fill="#D4D4D8"/>
+  <rect x="760" y="878" width="210" height="48" rx="24" fill="#D4D4D8"/>
+  <text x="600" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#18181B">Compact Body + Attachments</text>
+</svg>

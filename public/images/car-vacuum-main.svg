@@ -1,0 +1,15 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#F8FAFC"/>
+  <rect x="100" y="100" width="1000" height="1000" rx="54" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="4"/>
+  <path d="M785 355C850 386 892 451 892 523C892 636 800 728 687 728H432C375 728 328 681 328 624V586C328 527 376 479 435 479H638C683 479 720 442 720 397V373C720 354 738 342 756 348L785 355Z" fill="#18181B"/>
+  <path d="M395 544H671C711 544 744 511 744 471V418" stroke="#3F3F46" stroke-width="30" stroke-linecap="round"/>
+  <path d="M355 572H199C160 572 128 604 128 643V660H354" stroke="#18181B" stroke-width="54" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M660 727L798 846C824 868 827 906 805 932C783 958 745 961 719 939L552 795" fill="#27272A"/>
+  <circle cx="734" cy="549" r="54" fill="#10B981"/>
+  <circle cx="734" cy="549" r="28" fill="#D1FAE5"/>
+  <path d="M444 621H606" stroke="#71717A" stroke-width="18" stroke-linecap="round"/>
+  <path d="M448 667H548" stroke="#71717A" stroke-width="18" stroke-linecap="round"/>
+  <path d="M868 393L1016 332" stroke="#A1A1AA" stroke-width="24" stroke-linecap="round"/>
+  <path d="M896 468L1056 438" stroke="#A1A1AA" stroke-width="24" stroke-linecap="round"/>
+  <text x="600" y="1012" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#18181B">Cordless Car Vacuum Cleaner</text>
+</svg>

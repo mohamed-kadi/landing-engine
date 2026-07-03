@@ -1,0 +1,17 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#FAFAFA"/>
+  <rect x="110" y="190" width="980" height="710" rx="58" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="4"/>
+  <path d="M254 705C254 579 356 477 482 477H718C844 477 946 579 946 705V900H254V705Z" fill="#27272A"/>
+  <path d="M298 388C298 329 346 281 405 281H795C854 281 902 329 902 388V562H298V388Z" fill="#3F3F46"/>
+  <path d="M426 562V900" stroke="#52525B" stroke-width="32"/>
+  <path d="M774 562V900" stroke="#52525B" stroke-width="32"/>
+  <path d="M264 900H936" stroke="#18181B" stroke-width="42" stroke-linecap="round"/>
+  <circle cx="466" cy="734" r="11" fill="#F59E0B"/>
+  <circle cx="512" cy="792" r="8" fill="#F59E0B"/>
+  <circle cx="684" cy="764" r="10" fill="#F59E0B"/>
+  <circle cx="732" cy="820" r="7" fill="#F59E0B"/>
+  <path d="M632 708L842 634" stroke="#18181B" stroke-width="42" stroke-linecap="round"/>
+  <path d="M828 638L948 604" stroke="#3F3F46" stroke-width="42" stroke-linecap="round"/>
+  <circle cx="632" cy="708" r="44" fill="#10B981"/>
+  <text x="600" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#18181B">Quick Seat and Floor Cleanup</text>
+</svg>

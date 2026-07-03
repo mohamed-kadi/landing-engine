@@ -1,0 +1,14 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="72" fill="#ECFDF5"/>
+  <rect x="130" y="142" width="940" height="916" rx="52" fill="#FFFFFF" stroke="#BBF7D0" stroke-width="4"/>
+  <rect x="324" y="290" width="552" height="620" rx="82" fill="#18181B"/>
+  <rect x="390" y="356" width="420" height="488" rx="56" fill="#27272A" stroke="#3F3F46" stroke-width="6"/>
+  <path d="M454 474H746" stroke="#A7F3D0" stroke-width="26" stroke-linecap="round"/>
+  <path d="M454 592H746" stroke="#A7F3D0" stroke-width="26" stroke-linecap="round"/>
+  <path d="M454 710H746" stroke="#A7F3D0" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="600" cy="910" r="52" fill="#10B981"/>
+  <path d="M567 910H633" stroke="#D1FAE5" stroke-width="16" stroke-linecap="round"/>
+  <path d="M600 877V943" stroke="#D1FAE5" stroke-width="16" stroke-linecap="round"/>
+  <text x="600" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#18181B">Washable Filter System</text>
+  <text x="600" y="1000" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#166534">Reusable filter for routine dry cleanup</text>
+</svg>
