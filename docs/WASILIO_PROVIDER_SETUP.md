@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Phase 15 connects the Landing Engine to Wasilio public storefront APIs through provider and adapter boundaries. The engine still works with local fixture products for development and demos, but production deployments can now opt into Wasilio-backed product data and order capture.
+Phase 19 consumes Wasilio public storefront APIs through provider and adapter boundaries. The engine still works with local fixture products for development and demos, but production deployments can opt into Wasilio-backed product data, published storefront profile content, and order capture.
 
 This phase does not remove local fixtures, the local `/api/orders` route, SEO, analytics, pixels, or the reusable landing renderer.
 
@@ -72,7 +72,33 @@ Example:
 GET https://app.wasilio.com/api/public/storefront/coolair-morocco/products/wearable-neck-fan
 ```
 
-The Wasilio V1 response is normalized into `StorefrontProductPage`, which is the page model rendered by the Landing Engine.
+The Wasilio public response is normalized into `StorefrontProductPage`, which is the page model rendered by the Landing Engine. Landing Engine does not own or author rich Wasilio landing copy; Wasilio Storefront Publishing remains the source of truth and Landing Engine is only the renderer.
+
+The provider consumes these product and SEO fields when Wasilio sends them:
+
+- `defaultCountryCode` for the normalized `market.countryCode` fallback.
+- `defaultCurrency` as the fallback for `offer.currency` and normalized market currency.
+- `product.description` for page copy and SEO description fallback.
+- `product.imageUrl` as the primary product image.
+- `seo.image` as the default OpenGraph and Twitter image when more specific social image fields are absent.
+- normalized `product.productSlug`, `offer.price`, and `offer.currency` values for the route product and displayed offer.
+
+When a product storefront profile is published in Wasilio, the public response includes `landingProfile`. The provider maps the published profile fields into rendered landing sections:
+
+| Wasilio field | Landing Engine mapping |
+| --- | --- |
+| `landingProfile.headline` | hero headline |
+| `landingProfile.subheadline` | hero subheadline and section description fallback |
+| `landingProfile.benefits` | benefits list |
+| `landingProfile.features` | feature cards |
+| `landingProfile.faq` | visible FAQ section and FAQ JSON-LD input |
+| `landingProfile.trustBadges` | trust badge label and description |
+| `landingProfile.galleryImageUrls` | gallery images alongside the primary product image |
+| `landingProfile.seoTitle` | metadata title and social title fallback |
+| `landingProfile.seoDescription` | metadata description and product JSON-LD description |
+| `landingProfile.seoImageUrl` | OpenGraph and Twitter image fallback |
+
+Wasilio also folds published profile SEO overrides into top-level `seo.title`, `seo.description`, and `seo.image`. Landing Engine reads both locations, with `landingProfile` taking precedence when present.
 
 ## Wasilio Order Mode
 
@@ -97,18 +123,21 @@ The adapter does not send tenant IDs, merchant IDs, price authority, currency au
 
 The public Wasilio response is mapped back into the current `OrderCaptureResult` shape so the existing order form success/error behavior remains unchanged.
 
-## V1 Response Limitations
+## Public Response Shape
 
-Wasilio V1 is intentionally narrower than the local fixture model. It can provide a minimal product page with:
+The current Wasilio public product response provides:
 
 - store public name
 - support channel
+- default country and currency
 - product identity
 - product description
 - price and currency
 - main image
+- SEO title, description, and share image
 - public availability/orderable status
 - basic SEO fallback
+- optional published `landingProfile`
 
 The local fixtures already support richer ecommerce content:
 
@@ -125,9 +154,15 @@ The local fixtures already support richer ecommerce content:
 - analytics pixels
 - market/delivery rules
 
-When Wasilio does not provide rich sections, the provider creates conservative generic section data from the product name, description, price, image, delivery market, FAQ/testimonials when present, and trust badges when present. This keeps the renderer stable without hardcoding product-specific UI.
+Rich Wasilio page sections now come from Storefront Publishing through `landingProfile`. When Wasilio does not publish a profile, the public response omits `landingProfile`; the renderer keeps the product hero, product image/gallery state, availability, minimal operational trust, and order flow visible, but suppresses generated fallback benefits, features, comparison, reviews, and FAQ so the page does not look like it contains merchant-authored marketing content.
 
-If Wasilio returns a minimal V1 product with `description` or `imageUrl` missing, the provider uses SEO description as the marketing description and a neutral local product placeholder image. This prevents valid orderable products from becoming 404s while Wasilio storefront media support is still minimal.
+If Wasilio returns a minimal V1 product with `description`, `imageUrl`, `defaultCurrency`, `defaultCountryCode`, or `seo.image` missing, the provider keeps the product valid when possible by falling back to SEO description, the offer currency, Morocco market defaults, and a neutral local product placeholder image. This prevents valid orderable products from becoming 404s while Wasilio storefront content is incomplete.
+
+Remaining limitations:
+
+- `defaultCountryCode` does not localize the fallback city list, phone validation message, or generic trust copy by itself. Wasilio should send `market.deliveryCities`, `market.phonePattern`, and localized marketing sections for non-Morocco stores.
+- `seo.image` and `landingProfile.seoImageUrl` are used for metadata/social sharing; JSON-LD product images and the visible gallery still come from `product.imageUrl` and `landingProfile.galleryImageUrls`.
+- Reviews, FAQ, benefits, feature claims, and detailed trust copy should be managed in Wasilio Storefront Publishing before they appear on Wasilio-backed pages.
 
 ## Static Generation Boundary
 
@@ -191,13 +226,13 @@ For production Wasilio mode:
 - Set a valid Wasilio public API base URL.
 - Set the correct store slug.
 - Ensure product slugs in routes exist for that store.
-- Validate that Wasilio returns canonical URLs and image URLs suitable for public SEO and social sharing.
+- Publish the storefront product profile in Wasilio for premium landing sections.
+- Validate that Wasilio returns `product.imageUrl`, `landingProfile.galleryImageUrls`, and profile SEO image URLs suitable for public rendering and social sharing. Landing Engine will use its route fallback for canonical URLs until Wasilio exposes canonical URLs publicly.
 - Confirm Wasilio order ingestion returns a public-safe receipt only.
 
 Future improvements should add:
 
 - Wasilio public product listing endpoint for static params and sitemap generation.
 - Wasilio default product or storefront homepage endpoint for `/`.
-- Merchant-managed rich marketing sections.
 - Merchant-managed pixels and experiment configuration.
 - Server-side order/event attribution.

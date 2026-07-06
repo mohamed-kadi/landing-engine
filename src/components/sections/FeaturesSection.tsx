@@ -56,16 +56,16 @@ export function FeaturesSection({ featuresData }: FeaturesSectionProps) {
   const { title, list } = featuresData;
 
   return (
-    <section className="bg-white py-12 sm:py-16 lg:py-20">
+    <section className="bg-white py-10 sm:py-16 lg:py-20">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-zinc-950 sm:text-4xl">
             {title}
           </h2>
         </div>
-        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-7 grid grid-cols-1 gap-3 md:grid-cols-2 lg:mt-10 lg:grid-cols-4 lg:gap-4">
           {list.map((feature) => {
-            const IconComponent = iconMap[feature.icon] ?? CircleHelp;
+            const IconComponent = iconMap[feature.icon ?? 'package'] ?? CircleHelp;
             return (
               <Card key={feature.title} className="h-full shadow-sm transition-shadow hover:shadow-md">
                 <CardHeader>
@@ -73,9 +73,11 @@ export function FeaturesSection({ featuresData }: FeaturesSectionProps) {
                     <IconComponent className="h-5 w-5 text-white" />
                   </div>
                   <CardTitle className="mt-4 text-zinc-950">{feature.title}</CardTitle>
-                  <CardDescription className="font-medium text-emerald-700">
-                    {feature.customerBenefit}
-                  </CardDescription>
+                  {feature.customerBenefit && (
+                    <CardDescription className="font-medium text-emerald-700">
+                      {feature.customerBenefit}
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <CardDescription>{feature.description}</CardDescription>

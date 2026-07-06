@@ -10,7 +10,7 @@ export function PageShell({ children }: PageShellProps) {
   return (
     <>
       <Navbar />
-      <main className="bg-white text-zinc-950 pb-20 lg:pb-0">{children}</main>
+      <main className="bg-white text-zinc-950 pb-28 lg:pb-0">{children}</main>
       <Footer />
     </>
   );

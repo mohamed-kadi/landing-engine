@@ -18,19 +18,19 @@ export function FAQSection({ faqData }: FAQSectionProps) {
   };
 
   return (
-    <section className="bg-white py-12 sm:py-16 lg:py-20">
+    <section className="bg-white py-10 sm:py-16 lg:py-20">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-zinc-950 sm:text-4xl">{title}</h2>
         </div>
-        <div className="mx-auto mt-10 max-w-3xl">
+        <div className="mx-auto mt-7 max-w-3xl lg:mt-10">
           <div className="space-y-3">
             {items.map((item, index) => (
               <div key={index} className="rounded-lg border border-zinc-200 bg-white shadow-sm">
                 <button
                   type="button"
                   onClick={() => toggleFAQ(index)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left text-zinc-950"
+                  className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-zinc-950 sm:px-5 sm:py-5"
                 >
                   <span className="text-base font-semibold leading-6">{item.question}</span>
                   <ChevronDown

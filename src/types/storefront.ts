@@ -71,10 +71,10 @@ export type StorefrontSEO = {
 };
 
 export type StorefrontFeature = {
-  icon: string;
+  icon?: string;
   title: string;
   description: string;
-  customerBenefit: string;
+  customerBenefit?: string;
 };
 
 export type StorefrontComparisonPoint = {
@@ -138,6 +138,7 @@ export type StorefrontSectionConfig = {
     items: {
       icon: string;
       text: string;
+      description?: string;
     }[];
   };
   faq: {

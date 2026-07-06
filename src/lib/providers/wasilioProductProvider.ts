@@ -159,20 +159,32 @@ function mapWasilioProductResponseToStorefrontPage(
   }
 
   const storePublicName = readString(root.storePublicName);
+  const defaultCountryCode = readCountryCode(root.defaultCountryCode);
+  const defaultCurrency = readCurrencyCode(root.defaultCurrency);
   const productId = readString(product.productId);
-  const productSlug = readString(product.productSlug);
-  const productName = readString(product.productName);
+  const productSlug =
+    readString(product.productSlug) ?? readString(product.slug);
+  const productName =
+    readString(product.productName) ?? readString(product.name);
   const seo = readRecord(root.seo);
+  const landingProfile = readRecord(root.landingProfile);
+  const profileGalleryImages = readImageUrls(landingProfile?.galleryImageUrls);
+  const profileSeoTitle = readString(landingProfile?.seoTitle);
+  const profileSeoDescription = readString(landingProfile?.seoDescription);
+  const profileSeoImage = readString(landingProfile?.seoImageUrl);
   const description =
     readString(product.description) ??
+    readString(landingProfile?.subheadline) ??
+    profileSeoDescription ??
     readString(seo?.description) ??
     `Order ${productName} from ${storePublicName}.`;
   const imageUrl =
     readString(product.imageUrl) ??
+    profileGalleryImages[0] ??
     readString(seo?.imageUrl) ??
     DEFAULT_PRODUCT_IMAGE;
   const price = readNumber(offer.price);
-  const currency = readString(offer.currency);
+  const currency = readCurrencyCode(offer.currency) ?? defaultCurrency;
 
   if (
     !storePublicName ||
@@ -186,20 +198,41 @@ function mapWasilioProductResponseToStorefrontPage(
   }
 
   const supportChannel = readRecord(root.supportChannel);
-  const galleryImages = readImageUrls(root.gallery).filter(
+  const galleryImages = uniqueStrings([
+    ...profileGalleryImages,
+    ...readImageUrls(root.gallery),
+  ]).filter(
     (galleryImage) => galleryImage !== imageUrl
   );
-  const market = buildMarketConfig(root.market, currency);
-  const faqItems = readFAQItems(root.faq);
+  const market = buildMarketConfig(root.market, {
+    countryCode: defaultCountryCode,
+    currency,
+  });
+  const profileFaqItems = readFAQItems(landingProfile?.faq);
+  const fallbackFaqItems = readFAQItems(root.faq);
+  const faqItems =
+    profileFaqItems.length > 0 ? profileFaqItems : fallbackFaqItems;
   const reviews = readTestimonials(root.testimonials);
-  const trustItems = readTrustItems(root.trustBadges, supportChannel);
+  const profileTrustItems = readTrustItems(landingProfile?.trustBadges);
+  const fallbackTrustItems = readTrustItems(root.trustBadges);
+  const trustItems =
+    profileTrustItems.length > 0
+      ? profileTrustItems
+      : fallbackTrustItems.length > 0
+        ? fallbackTrustItems
+        : buildFallbackTrustItems(supportChannel);
   const orderable =
-    readBoolean(product.orderable) ?? readBoolean(offer.orderable) ?? false;
+    readBoolean(offer.orderable) ?? readBoolean(product.orderable) ?? false;
   const publicAvailability =
-    readString(product.availability) ?? readString(offer.availability);
-  const seoTitle = readString(seo?.title) ?? productName;
-  const seoDescription = readString(seo?.description) ?? description;
-  const seoImage = readString(seo?.imageUrl) ?? imageUrl;
+    readString(offer.availability) ?? readString(product.availability);
+  const seoTitle = profileSeoTitle ?? readString(seo?.title) ?? productName;
+  const seoDescription =
+    profileSeoDescription ?? readString(seo?.description) ?? description;
+  const seoImage =
+    profileSeoImage ??
+    readString(seo?.image) ??
+    readString(seo?.imageUrl) ??
+    imageUrl;
   const canonicalUrl =
     readString(seo?.canonicalUrl) ?? buildFallbackCanonicalUrl(productSlug);
   const variants = readVariants(root.variants, price, orderable);
@@ -233,6 +266,7 @@ function mapWasilioProductResponseToStorefrontPage(
       reviews,
       faqItems,
       trustItems,
+      landingProfile,
       marketingSections: root.marketingSections,
     }),
     seo: {
@@ -309,6 +343,7 @@ type SectionBuilderInput = {
   reviews: StorefrontReview[];
   faqItems: StorefrontFAQItem[];
   trustItems: StorefrontSectionConfig['trust']['items'];
+  landingProfile: unknown;
   marketingSections: unknown;
 };
 
@@ -318,8 +353,10 @@ function buildSections({
   reviews,
   faqItems,
   trustItems,
+  landingProfile,
   marketingSections,
 }: SectionBuilderInput): StorefrontSectionConfig {
+  const profile = readRecord(landingProfile);
   const sections = readRecord(marketingSections);
   const hero = readRecord(sections?.hero);
   const benefits = readRecord(sections?.benefits);
@@ -330,19 +367,31 @@ function buildSections({
   const socialProof = readRecord(sections?.socialProof);
   const trust = readRecord(sections?.trust);
   const faq = readRecord(sections?.faq);
+  const profileBenefits = readStringArray(profile?.benefits);
+  const profileFeatures = readFeatureList(profile?.features);
 
   return {
     hero: {
-      headline: readString(hero?.headline) ?? productName,
-      subheadline: readString(hero?.subheadline) ?? description,
+      headline:
+        readString(profile?.headline) ??
+        readString(hero?.headline) ??
+        productName,
+      subheadline:
+        readString(profile?.subheadline) ??
+        readString(hero?.subheadline) ??
+        description,
       cta: readString(hero?.cta) ?? 'Order Now',
       secondaryCta:
         readString(hero?.secondaryCta) ?? 'Cash on Delivery | Fast Shipping',
     },
     benefits: {
       title: readString(benefits?.title) ?? `Why choose ${productName}`,
-      description: readString(benefits?.description) ?? description,
+      description:
+        readString(profile?.subheadline) ??
+        readString(benefits?.description) ??
+        description,
       list:
+        profileBenefits ??
         readStringArray(benefits?.list) ??
         [
           'Order online and pay only when the product arrives.',
@@ -353,7 +402,10 @@ function buildSections({
     features: {
       title: readString(features?.title) ?? 'Product Details',
       list:
-        readFeatureList(features?.list) ??
+        profileFeatures ??
+        readFeatureList(features?.list, {
+          fallbackCustomerBenefit: 'Practical daily value',
+        }) ??
         [
           {
             icon: 'package',
@@ -412,14 +464,21 @@ function buildSections({
   };
 }
 
-function buildMarketConfig(input: unknown, currency: string) {
+type MarketFallbacks = {
+  countryCode?: string;
+  currency: string;
+};
+
+function buildMarketConfig(input: unknown, fallbacks: MarketFallbacks) {
   const market = readRecord(input);
   const deliveryCities = readStringArray(market?.deliveryCities);
+  const countryCode =
+    readCountryCode(market?.countryCode) ?? fallbacks.countryCode ?? 'MA';
 
   return {
-    countryCode: readString(market?.countryCode) ?? 'MA',
+    countryCode,
     locale: readString(market?.locale) ?? 'en-MA',
-    currency: readString(market?.currency) ?? currency,
+    currency: readCurrencyCode(market?.currency) ?? fallbacks.currency,
     deliveryCities:
       deliveryCities && deliveryCities.length > 0
         ? deliveryCities
@@ -464,27 +523,36 @@ function readVariants(
     .filter((variant): variant is StorefrontVariant => Boolean(variant));
 }
 
+type FeatureListOptions = {
+  fallbackCustomerBenefit?: string;
+};
+
 function readFeatureList(
-  input: unknown
+  input: unknown,
+  options: FeatureListOptions = {}
 ): StorefrontSectionConfig['features']['list'] | undefined {
   const features = readArray(input)
-    .map((featureInput) => {
-      const feature = readRecord(featureInput);
-      const title = readString(feature?.title);
-      const description = readString(feature?.description);
+    .map(
+      (featureInput): StorefrontSectionConfig['features']['list'][number] | undefined => {
+        const feature = readRecord(featureInput);
+        const title = readString(feature?.title);
+        const description = readString(feature?.description);
+        const customerBenefit =
+          readString(feature?.customerBenefit) ??
+          options.fallbackCustomerBenefit;
 
-      if (!title || !description) {
-        return undefined;
+        if (!title || !description) {
+          return undefined;
+        }
+
+        return {
+          icon: readString(feature?.icon) ?? 'package',
+          title,
+          description,
+          ...(customerBenefit ? { customerBenefit } : {}),
+        };
       }
-
-      return {
-        icon: readString(feature?.icon) ?? 'package',
-        title,
-        description,
-        customerBenefit:
-          readString(feature?.customerBenefit) ?? 'Practical daily value',
-      };
-    })
+    )
     .filter(
       (
         feature
@@ -565,18 +633,20 @@ function readTestimonials(input: unknown): StorefrontReview[] {
 }
 
 function readTrustItems(
-  input: unknown,
-  supportChannel?: Record<string, unknown>
+  input: unknown
 ): StorefrontSectionConfig['trust']['items'] {
-  const trustItems = readArray(input)
+  return readArray(input)
     .map((itemInput) => {
       const item = readRecord(itemInput);
       const text = readString(item?.text) ?? readString(item?.label);
+      const description = readString(item?.description);
 
       return text
         ? {
-            icon: readString(item?.icon) ?? 'shield',
+            icon:
+              readString(item?.icon) ?? inferTrustIcon(text, description),
             text,
+            ...(description ? { description } : {}),
           }
         : undefined;
     })
@@ -584,21 +654,42 @@ function readTrustItems(
       (item): item is StorefrontSectionConfig['trust']['items'][number] =>
         Boolean(item)
     );
+}
 
-  if (trustItems.length > 0) {
-    return trustItems;
-  }
-
+function buildFallbackTrustItems(
+  supportChannel?: Record<string, unknown>
+): StorefrontSectionConfig['trust']['items'] {
   const supportValue = readString(supportChannel?.value);
 
   return [
     { icon: 'cod', text: 'Cash on Delivery' },
-    { icon: 'shipping', text: 'Fast Shipping in Morocco' },
     {
       icon: 'support',
       text: supportValue ? 'Store support available' : 'Customer Support',
     },
   ];
+}
+
+function inferTrustIcon(label: string, description?: string) {
+  const text = `${label} ${description ?? ''}`.toLowerCase();
+
+  if (text.includes('cod') || text.includes('cash') || text.includes('pay')) {
+    return 'cod';
+  }
+
+  if (text.includes('ship') || text.includes('delivery')) {
+    return 'shipping';
+  }
+
+  if (text.includes('return') || text.includes('refund')) {
+    return 'return';
+  }
+
+  if (text.includes('support') || text.includes('whatsapp')) {
+    return 'support';
+  }
+
+  return 'shield';
 }
 
 function readImageUrls(input: unknown): string[] {
@@ -612,6 +703,12 @@ function readImageUrls(input: unknown): string[] {
       return readString(image?.url) ?? readString(image?.imageUrl);
     })
     .filter((image): image is string => Boolean(image));
+}
+
+function uniqueStrings(values: string[]) {
+  return values.filter(
+    (value, index, allValues) => allValues.indexOf(value) === index
+  );
 }
 
 function readAnalyticsConfig(input: unknown) {
@@ -749,6 +846,14 @@ function readArray(value: unknown): unknown[] {
 
 function readString(value: unknown) {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function readCountryCode(value: unknown) {
+  return readString(value)?.toUpperCase();
+}
+
+function readCurrencyCode(value: unknown) {
+  return readString(value)?.toUpperCase();
 }
 
 function readStringArray(value: unknown) {

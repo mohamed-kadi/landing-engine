@@ -18,6 +18,7 @@ import {
 import { createProductAnalyticsContext } from '../../lib/analytics/events';
 import { assignExperiment } from '../../lib/experiments/assignExperiment';
 import { resolveProductExperiments } from '../../lib/experiments/productExperiments';
+import { getProductPresentation } from '../../lib/storefront/productPresentation';
 import type {
   ResolvedStorefrontExperimentConfig,
   StorefrontProductPage,
@@ -38,6 +39,7 @@ export function LandingPageClient({
   });
   const { experiments, ready: assignmentReady } = assignment;
   const variants = experiments.resolvedVariants;
+  const presentation = getProductPresentation(productPage);
   const analyticsContext = useMemo(
     () => createProductAnalyticsContext(productPage, experiments),
     [productPage, experiments]
@@ -65,41 +67,61 @@ export function LandingPageClient({
         heroData={productPage.sections.hero}
         mainImage={productPage.media.mainImage}
         productName={productPage.product.name}
+        brandName={productPage.product.brand}
         price={productPage.offer.price}
+        availability={productPage.offer.availability}
         ctaTargetId={productPage.orderForm.sectionId}
         analyticsContext={analyticsContext}
+        supportText={presentation.supportText}
         heroVariant={variants.heroVariant}
         ctaVariant={variants.ctaVariant}
         priceVariant={variants.priceVariant}
       />
       <TrustSection
         trustData={productPage.sections.trust}
+        storeName={productPage.product.brand}
+        availability={productPage.offer.availability}
         trustVariant={variants.trustVariant}
       />
-      <ProductGallerySection
-        galleryData={productPage.media}
-        productName={productPage.product.name}
-        analyticsContext={analyticsContext}
-        galleryVariant={variants.galleryVariant}
-      />
-      <BenefitsSection benefitsData={productPage.sections.benefits} />
-      <FeaturesSection featuresData={productPage.sections.features} />
-      <ProblemSolutionSection
-        problemSolutionData={productPage.sections.problemSolution}
-      />
-      <ComparisonSection comparisonData={productPage.sections.comparison} />
-      <SocialProofSection
-        socialProofData={productPage.sections.socialProof}
-        reviewVariant={variants.reviewVariant}
-      />
-      <FAQSection faqData={productPage.sections.faq} />
+      {presentation.showGallery && (
+        <ProductGallerySection
+          galleryData={productPage.media}
+          productName={productPage.product.name}
+          analyticsContext={analyticsContext}
+          galleryVariant={variants.galleryVariant}
+        />
+      )}
+      {presentation.showBenefits && (
+        <BenefitsSection benefitsData={productPage.sections.benefits} />
+      )}
+      {presentation.showFeatures && (
+        <FeaturesSection featuresData={productPage.sections.features} />
+      )}
+      {presentation.showProblemSolution && (
+        <ProblemSolutionSection
+          problemSolutionData={productPage.sections.problemSolution}
+        />
+      )}
+      {presentation.showComparison && (
+        <ComparisonSection comparisonData={productPage.sections.comparison} />
+      )}
+      {presentation.showSocialProof && (
+        <SocialProofSection
+          socialProofData={productPage.sections.socialProof}
+          reviewVariant={variants.reviewVariant}
+        />
+      )}
+      {presentation.showFAQ && <FAQSection faqData={productPage.sections.faq} />}
       <OrderFormSection
         variants={productPage.offer.variants}
         orderFormData={productPage.orderForm}
+        storeName={productPage.product.brand}
+        supportText={presentation.supportText}
         analyticsContext={analyticsContext}
       />
       <StickyCTASection
         ctaLabel={productPage.sections.hero.cta}
+        price={productPage.offer.price}
         targetId={productPage.orderForm.sectionId}
         analyticsContext={analyticsContext}
         ctaVariant={variants.ctaVariant}

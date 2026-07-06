@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import publicProductMinimalResponse from '../../../test/fixtures/wasilio/publicProductMinimalResponse.json';
 import publicProductResponse from '../../../test/fixtures/wasilio/publicProductResponse.json';
+import { createFAQJsonLd } from '../../seo/faqJsonLd';
+import { prepareProductPageForDisplay } from '../../storefront/productPresentation';
 import { wasilioProductProvider } from '../wasilioProductProvider';
 
 const originalEnv = {
@@ -24,7 +27,7 @@ describe('wasilioProductProvider', () => {
     vi.restoreAllMocks();
   });
 
-  it('maps Wasilio V1 product identity, offer, images, SEO, and default sections', async () => {
+  it('maps Wasilio published landingProfile content into storefront page sections', async () => {
     const fetchMock = mockProductResponse(publicProductResponse, 200);
 
     const productPage = await wasilioProductProvider.getProductPageBySlug(
@@ -44,7 +47,7 @@ describe('wasilioProductProvider', () => {
     );
     expect(productPage).toBeDefined();
     expect(productPage?.product).toEqual({
-      id: 'prod_portable_air_cooler_001',
+      id: 'de5e9c8a-ef5d-4c76-b983-b76b74f39f28',
       slug: 'portable-air-cooler',
       name: 'Portable Air Cooler',
       brand: 'CoolAir Morocco',
@@ -59,42 +62,92 @@ describe('wasilioProductProvider', () => {
       mainImage:
         'https://cdn.wasilio.test/products/portable-air-cooler/main.jpg',
       images: [
-        'https://cdn.wasilio.test/products/portable-air-cooler/side.jpg',
-        'https://cdn.wasilio.test/products/portable-air-cooler/detail.jpg',
+        'https://cdn.example.test/gallery-1.jpg',
       ],
     });
+    expect(productPage?.market.countryCode).toBe('MA');
+    expect(productPage?.market.currency).toBe('MAD');
     expect(productPage?.seo.seoTitle).toBe(
-      'Portable Air Cooler - CoolAir Morocco'
+      'Portable CoolAir Morocco'
+    );
+    expect(productPage?.seo.seoDescription).toBe(
+      'Order a portable CoolAir fan in Morocco.'
     );
     expect(productPage?.seo.ogTitle).toBe(
-      'Portable Air Cooler - CoolAir Morocco'
+      'Portable CoolAir Morocco'
+    );
+    expect(productPage?.seo.ogImage).toBe(
+      'https://cdn.example.test/seo-coolair.jpg'
     );
     expect(productPage?.seo.twitterImage).toBe(
-      'https://cdn.wasilio.test/products/portable-air-cooler/main.jpg'
+      'https://cdn.example.test/seo-coolair.jpg'
     );
     expect(productPage?.sections.hero).toEqual({
-      headline: 'Portable Air Cooler',
-      subheadline:
-        'A compact evaporative air cooler for small rooms, desks, and bedside cooling.',
+      headline: 'Cool air without installation',
+      subheadline: 'A portable fan for COD customers.',
       cta: 'Order Now',
       secondaryCta: 'Cash on Delivery | Fast Shipping',
     });
-    expect(productPage?.sections.features.list).toHaveLength(1);
-    expect(productPage?.sections.socialProof.reviews).toEqual([]);
-    expect(productPage?.sections.faq.items).toEqual([]);
-    expect(productPage?.sections.trust.items).toEqual([
-      { icon: 'cod', text: 'Cash on Delivery' },
-      { icon: 'shipping', text: 'Fast Shipping in Morocco' },
-      { icon: 'support', text: 'Store support available' },
+    expect(productPage?.sections.benefits.list).toEqual([
+      'Fast COD delivery',
+      'Easy returns',
     ]);
+    expect(productPage?.sections.features.list).toEqual([
+      {
+        icon: 'package',
+        title: 'Rechargeable',
+        description: 'Runs for hours after charging.',
+      },
+    ]);
+    expect(productPage?.sections.faq.items).toEqual([
+      {
+        question: 'Can I pay on delivery?',
+        answer: 'Yes, cash on delivery is supported.',
+      },
+    ]);
+    expect(productPage?.sections.socialProof.reviews).toEqual([]);
+    expect(productPage?.sections.trust.items).toEqual([
+      {
+        icon: 'cod',
+        text: 'COD',
+        description: 'Pay when the package arrives.',
+      },
+    ]);
+  });
+
+  it('uses Wasilio default currency and country when offer and market fields are absent', async () => {
+    mockProductResponse(
+      {
+        ...publicProductResponse,
+        defaultCountryCode: 'CI',
+        defaultCurrency: 'XOF',
+        offer: {
+          ...publicProductResponse.offer,
+          currency: null,
+        },
+        market: null,
+      },
+      200
+    );
+
+    const productPage = await wasilioProductProvider.getProductPageBySlug(
+      'portable-air-cooler'
+    );
+
+    expect(productPage?.offer.price).toEqual({
+      amount: 349,
+      currency: 'XOF',
+    });
+    expect(productPage?.market.countryCode).toBe('CI');
+    expect(productPage?.market.currency).toBe('XOF');
   });
 
   it('maps unavailable or non-orderable products to schema.org OutOfStock', async () => {
     mockProductResponse(
       {
         ...publicProductResponse,
-        product: {
-          ...publicProductResponse.product,
+        offer: {
+          ...publicProductResponse.offer,
           availability: 'UNAVAILABLE',
           orderable: false,
         },
@@ -111,38 +164,12 @@ describe('wasilioProductProvider', () => {
     );
   });
 
-  it('maps current Wasilio minimal responses with nullable description and image fields', async () => {
-    mockProductResponse(
-      {
-        storeSlug: 'first-store',
-        storePublicName: 'firstStore',
-        supportChannel: {
-          type: 'whatsapp',
-          value: '+212600000101',
-        },
-        product: {
-          productId: 'b2babebe-cf0d-49e5-94de-186c427f58b2',
-          productSlug: 'wear-fan',
-          productName: 'wearfan',
-          description: null,
-          imageUrl: null,
-        },
-        offer: {
-          price: 50,
-          currency: 'MAD',
-          availability: 'available',
-          orderable: true,
-        },
-        seo: {
-          title: 'wearfan | firstStore',
-          description: 'Order wearfan from firstStore.',
-        },
-      },
-      200
-    );
+  it('keeps missing or draft landingProfile responses on the sparse fallback path', async () => {
+    mockProductResponse(publicProductMinimalResponse, 200);
 
     const productPage =
       await wasilioProductProvider.getProductPageBySlug('wear-fan');
+    const displayProductPage = prepareProductPageForDisplay(productPage!);
 
     expect(productPage?.product).toEqual({
       id: 'b2babebe-cf0d-49e5-94de-186c427f58b2',
@@ -161,9 +188,52 @@ describe('wasilioProductProvider', () => {
     expect(productPage?.seo.seoDescription).toBe(
       'Order wearfan from firstStore.'
     );
+    expect(productPage?.seo.ogImage).toBe('/images/product-placeholder.svg');
     expect(productPage?.sections.hero.subheadline).toBe(
       'Order wearfan from firstStore.'
     );
+    expect(displayProductPage.sections.benefits.list).toEqual([]);
+    expect(displayProductPage.sections.features.list).toEqual([]);
+    expect(displayProductPage.sections.socialProof.reviews).toEqual([]);
+    expect(displayProductPage.sections.faq.items).toEqual([]);
+  });
+
+  it('builds FAQ JSON-LD inputs only from real Wasilio FAQ content', async () => {
+    mockProductResponse(publicProductResponse, 200);
+
+    const productPage = await wasilioProductProvider.getProductPageBySlug(
+      'portable-air-cooler'
+    );
+    const displayProductPage = prepareProductPageForDisplay(productPage!);
+    const faqJsonLd =
+      displayProductPage.sections.faq.items.length > 0
+        ? createFAQJsonLd(displayProductPage.sections.faq)
+        : undefined;
+
+    expect(faqJsonLd?.mainEntity).toEqual([
+      {
+        '@type': 'Question',
+        name: 'Can I pay on delivery?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes, cash on delivery is supported.',
+        },
+      },
+    ]);
+
+    mockProductResponse(publicProductMinimalResponse, 200);
+
+    const minimalProductPage =
+      await wasilioProductProvider.getProductPageBySlug('wear-fan');
+    const minimalDisplayProductPage = prepareProductPageForDisplay(
+      minimalProductPage!
+    );
+    const minimalFaqJsonLd =
+      minimalDisplayProductPage.sections.faq.items.length > 0
+        ? createFAQJsonLd(minimalDisplayProductPage.sections.faq)
+        : undefined;
+
+    expect(minimalFaqJsonLd).toBeUndefined();
   });
 
   it('returns undefined for a Wasilio 404 without using a local fixture', async () => {

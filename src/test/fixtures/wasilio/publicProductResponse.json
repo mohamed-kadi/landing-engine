@@ -1,46 +1,61 @@
 {
   "storeSlug": "coolair-morocco",
   "storePublicName": "CoolAir Morocco",
+  "defaultCountryCode": "MA",
+  "defaultCurrency": "MAD",
   "supportChannel": {
     "type": "whatsapp",
     "value": "+212600000000"
   },
   "product": {
-    "productId": "prod_portable_air_cooler_001",
+    "productId": "de5e9c8a-ef5d-4c76-b983-b76b74f39f28",
     "productSlug": "portable-air-cooler",
     "productName": "Portable Air Cooler",
     "description": "A compact evaporative air cooler for small rooms, desks, and bedside cooling.",
-    "imageUrl": "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg",
-    "availability": "AVAILABLE",
-    "orderable": true
+    "imageUrl": "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg"
   },
   "offer": {
     "price": 349,
-    "currency": "MAD"
+    "currency": "MAD",
+    "availability": "available",
+    "orderable": true
   },
   "seo": {
-    "title": "Portable Air Cooler - CoolAir Morocco",
-    "description": "Order a compact portable air cooler in Morocco with cash on delivery.",
-    "imageUrl": "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg",
-    "canonicalUrl": "https://coolair-morocco.wasilio.test/products/portable-air-cooler"
+    "title": "Portable CoolAir Morocco",
+    "description": "Order a portable CoolAir fan in Morocco.",
+    "image": "https://cdn.example.test/seo-coolair.jpg"
   },
-  "gallery": [
-    "https://cdn.wasilio.test/products/portable-air-cooler/side.jpg",
-    {
-      "url": "https://cdn.wasilio.test/products/portable-air-cooler/detail.jpg"
-    }
-  ],
-  "variants": [],
-  "faq": [],
-  "testimonials": [],
-  "trustBadges": [],
-  "experiments": null,
-  "analytics": {},
-  "market": {
-    "countryCode": "MA",
-    "currency": "MAD",
-    "deliveryCities": ["Casablanca", "Rabat"],
-    "phonePattern": "^(06|07)\\d{8}$"
-  },
-  "marketingSections": {}
+  "landingProfile": {
+    "headline": "Cool air without installation",
+    "subheadline": "A portable fan for COD customers.",
+    "benefits": [
+      "Fast COD delivery",
+      "Easy returns"
+    ],
+    "features": [
+      {
+        "title": "Rechargeable",
+        "description": "Runs for hours after charging."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Can I pay on delivery?",
+        "answer": "Yes, cash on delivery is supported."
+      }
+    ],
+    "trustBadges": [
+      {
+        "label": "COD",
+        "description": "Pay when the package arrives."
+      }
+    ],
+    "galleryImageUrls": [
+      "https://cdn.example.test/gallery-1.jpg",
+      "https://cdn.wasilio.test/products/portable-air-cooler/main.jpg"
+    ],
+    "seoTitle": "Portable CoolAir Morocco",
+    "seoDescription": "Order a portable CoolAir fan in Morocco.",
+    "seoImageUrl": "https://cdn.example.test/seo-coolair.jpg"
+  }
 }

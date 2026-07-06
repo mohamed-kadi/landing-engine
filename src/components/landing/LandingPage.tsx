@@ -4,6 +4,7 @@ import { resolveProductExperiments } from '../../lib/experiments/productExperime
 import { createFAQJsonLd } from '../../lib/seo/faqJsonLd';
 import { serializeJsonLd } from '../../lib/seo/jsonLd';
 import { createProductJsonLd } from '../../lib/seo/productJsonLd';
+import { prepareProductPageForDisplay } from '../../lib/storefront/productPresentation';
 import type { StorefrontProductPage } from '../../types/storefront';
 
 type LandingPageProps = {
@@ -11,9 +12,13 @@ type LandingPageProps = {
 };
 
 export function LandingPage({ productPage }: LandingPageProps) {
-  const fallbackExperiment = resolveProductExperiments(productPage);
-  const productJsonLd = createProductJsonLd(productPage);
-  const faqJsonLd = createFAQJsonLd(productPage.sections.faq);
+  const displayProductPage = prepareProductPageForDisplay(productPage);
+  const fallbackExperiment = resolveProductExperiments(displayProductPage);
+  const productJsonLd = createProductJsonLd(displayProductPage);
+  const faqJsonLd =
+    displayProductPage.sections.faq.items.length > 0
+      ? createFAQJsonLd(displayProductPage.sections.faq)
+      : undefined;
 
   return (
     <PageShell>
@@ -21,13 +26,15 @@ export function LandingPage({ productPage }: LandingPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(productJsonLd) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
-      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
+        />
+      )}
       <LandingPageClient
-        key={productPage.product.slug}
-        productPage={productPage}
+        key={displayProductPage.product.slug}
+        productPage={displayProductPage}
         fallbackExperiment={fallbackExperiment}
       />
     </PageShell>

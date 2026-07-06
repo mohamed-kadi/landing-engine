@@ -1,0 +1,28 @@
+{
+  "storeSlug": "first-store",
+  "storePublicName": "firstStore",
+  "defaultCountryCode": "MA",
+  "defaultCurrency": "MAD",
+  "supportChannel": {
+    "type": "whatsapp",
+    "value": "+212600000101"
+  },
+  "product": {
+    "productId": "b2babebe-cf0d-49e5-94de-186c427f58b2",
+    "productSlug": "wear-fan",
+    "productName": "wearfan",
+    "description": null,
+    "imageUrl": null
+  },
+  "offer": {
+    "price": 50,
+    "currency": "MAD",
+    "availability": "available",
+    "orderable": true
+  },
+  "seo": {
+    "title": "wearfan | firstStore",
+    "description": "Order wearfan from firstStore.",
+    "image": null
+  }
+}
