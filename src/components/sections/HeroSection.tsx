@@ -166,7 +166,7 @@ export function HeroSection({
                   alt={`Main product image for ${productName}`}
                   fill
                   className={`object-contain ${isPlaceholderImage ? 'p-8 opacity-80 sm:p-14' : 'p-2 sm:p-5'}`}
-                  priority
+                  preload
                   unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />

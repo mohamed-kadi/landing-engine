@@ -73,6 +73,7 @@ export function ProductGallerySection({
               alt={`Main view of ${productName}`}
               fill
               className={`object-contain transition-opacity duration-300 ${isPlaceholderImage ? 'p-14 opacity-80 sm:p-20' : 'p-5 sm:p-8'}`}
+              loading="eager"
               unoptimized
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 66vw"
             />
