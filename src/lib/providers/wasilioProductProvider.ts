@@ -8,7 +8,10 @@ import type {
   StorefrontSectionConfig,
   StorefrontVariant,
 } from '../../types/storefront';
-import type { ProductProvider } from './ProductProvider';
+import type {
+  ProductProvider,
+  ProductProviderFetchOptions,
+} from './ProductProvider';
 import { localFixtureProductProvider } from './localFixtureProvider';
 
 const WASILIO_PRODUCT_REVALIDATE_SECONDS = 300;
@@ -55,7 +58,7 @@ const PRICE_VARIANTS: StorefrontExperimentVariants['priceVariant'][] = [
 ];
 
 export const wasilioProductProvider: ProductProvider = {
-  async getProductPageBySlug(slug) {
+  async getProductPageBySlug(slug, options) {
     const endpoint = buildWasilioProductEndpoint(slug);
 
     if (!endpoint) {
@@ -63,14 +66,7 @@ export const wasilioProductProvider: ProductProvider = {
     }
 
     try {
-      const response = await fetch(endpoint, {
-        headers: {
-          Accept: 'application/json',
-        },
-        next: {
-          revalidate: WASILIO_PRODUCT_REVALIDATE_SECONDS,
-        },
-      });
+      const response = await fetch(endpoint, wasilioProductFetchOptions(options));
 
       if (response.status === 404) {
         return undefined;
@@ -128,6 +124,26 @@ export const wasilioProductProvider: ProductProvider = {
       : localProductPages;
   },
 };
+
+function wasilioProductFetchOptions(options?: ProductProviderFetchOptions) {
+  const headers = {
+    Accept: 'application/json',
+  };
+
+  if (options?.fresh) {
+    return {
+      headers,
+      cache: 'no-store' as const,
+    };
+  }
+
+  return {
+    headers,
+    next: {
+      revalidate: WASILIO_PRODUCT_REVALIDATE_SECONDS,
+    },
+  };
+}
 
 function buildWasilioProductEndpoint(productSlug: string) {
   const baseUrl = process.env.NEXT_PUBLIC_WASILIO_PUBLIC_API_BASE_URL?.trim();

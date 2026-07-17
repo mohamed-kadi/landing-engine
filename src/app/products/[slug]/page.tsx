@@ -11,6 +11,7 @@ type ProductPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export const dynamicParams = true;
@@ -38,13 +39,20 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   return createProductMetadata(productPage);
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const { slug } = await params;
-  const productPage = await getProductProvider().getProductPageBySlug(slug);
+  const productPage = await getProductProvider().getProductPageBySlug(slug, {
+    fresh: isWasilioPreview(await searchParams),
+  });
 
   if (!productPage) {
     notFound();
   }
 
   return <LandingPage productPage={productPage} />;
+}
+
+function isWasilioPreview(searchParams?: Record<string, string | string[] | undefined>) {
+  const preview = searchParams?.wasilioPreview;
+  return preview === '1' || preview === 'true';
 }

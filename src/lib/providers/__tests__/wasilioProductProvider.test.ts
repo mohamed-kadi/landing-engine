@@ -142,6 +142,25 @@ describe('wasilioProductProvider', () => {
     expect(productPage?.market.currency).toBe('XOF');
   });
 
+  it('can bypass product revalidation cache for merchant previews', async () => {
+    const fetchMock = mockProductResponse(publicProductResponse, 200);
+
+    await wasilioProductProvider.getProductPageBySlug(
+      'portable-air-cooler',
+      { fresh: true }
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.wasilio.test/api/public/storefront/coolair-morocco/products/portable-air-cooler',
+      {
+        headers: {
+          Accept: 'application/json',
+        },
+        cache: 'no-store',
+      }
+    );
+  });
+
   it('maps unavailable or non-orderable products to schema.org OutOfStock', async () => {
     mockProductResponse(
       {
